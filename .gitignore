@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+
+# Secrets
+.env
+*.env
+!.env.example
+
+# DVC
+/data/raw/
+/data/processed/
+/data/reference/
+/models/
+!*.dvc
+!.dvc/config
+!.dvc/.gitignore
+
+# W&B
+wandb/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Airflow
+airflow/logs/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Misc
+*.log
+*.tmp
