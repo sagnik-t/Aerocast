@@ -45,3 +45,4 @@ airflow/logs/
 # Misc
 *.log
 *.tmp
+.envrc
