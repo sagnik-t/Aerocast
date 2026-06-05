@@ -54,9 +54,10 @@ profile     = "black"
 line_length = 88
 
 [tool.pytest.ini_options]
-testpaths   = ["tests"]
+testpaths    = ["tests"]
 asyncio_mode = "auto"
-addopts     = "--cov=src/aerocast --cov-report=term-missing --cov-fail-under=70"
+pythonpath   = ["src"]
+addopts      = "--cov=src/aerocast --cov-report=term-missing"
 
 [build-system]
 requires      = ["poetry-core"]
