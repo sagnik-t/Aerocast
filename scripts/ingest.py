@@ -7,6 +7,7 @@ Usage:
     python scripts/ingest.py --date-from 2024-01-01 --date-to 2024-01-07
     python scripts/ingest.py --no-dvc-push
 """
+
 from __future__ import annotations
 
 import argparse
