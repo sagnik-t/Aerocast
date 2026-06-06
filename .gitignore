@@ -28,6 +28,11 @@ wandb/
 
 # Jupyter
 .ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# Reports — HTML committed so reviewers can see them without re-running notebooks
+# figures/ holds exported chart images for the README
+
 
 # Testing
 .pytest_cache/
