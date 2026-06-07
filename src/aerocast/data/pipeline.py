@@ -26,10 +26,6 @@ from aerocast.data.validate import validate_processed, validate_raw
 
 logger = logging.getLogger(__name__)
 
-# Relative to repo root
-RAW_DIR = Path("data/raw")
-PROCESSED_DIR = Path("data/processed")
-
 
 def _timestamp() -> str:
     return datetime.now(tz=timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -98,11 +94,13 @@ def run_ingestion(
 
     # ── 5. Persist ───────────────────────────────────────────────────────
     ts = _timestamp()
-    RAW_DIR.mkdir(parents=True, exist_ok=True)
-    PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+    raw_dir = Path(cfg.data_raw_dir)
+    processed_dir = Path(cfg.data_processed_dir)
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    processed_dir.mkdir(parents=True, exist_ok=True)
 
-    raw_path = RAW_DIR / f"measurements_{ts}.csv"
-    processed_path = PROCESSED_DIR / f"features_{ts}.csv"
+    raw_path = raw_dir / f"measurements_{ts}.csv"
+    processed_path = processed_dir / f"features_{ts}.csv"
 
     raw_df.to_csv(raw_path, index=False)
     processed_df.to_csv(processed_path, index=False)
