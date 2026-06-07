@@ -1,0 +1,99 @@
+# AeroCast — Airflow (LocalExecutor) development stack
+#
+# Start:  docker compose -f airflow/docker-compose.yml up --build
+# Init:   docker compose -f airflow/docker-compose.yml run --rm airflow-init
+# UI:     http://localhost:8080  (user: airflow / pass: airflow)
+#
+# Required env vars (set in ../.env):
+#   OPENAQ_API_KEY, OPENAQ_LOCATION_IDS
+#   WANDB_API_KEY, WANDB_PROJECT, WANDB_ENTITY
+#   DAGSHUB_USER_TOKEN, DAGSHUB_REPO_OWNER
+#   SLACK_WEBHOOK_URL
+#   AIRFLOW_FERNET_KEY  (generate: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
+
+x-airflow-common: &airflow-common
+  build:
+    context: ..
+    dockerfile: airflow/Dockerfile
+  image: aerocast-airflow:latest
+  environment:
+    # ── Airflow core ────────────────────────────────────────────────────
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__FERNET_KEY: "${AIRFLOW_FERNET_KEY:-}"
+    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: >-
+      postgresql+psycopg2://airflow:airflow@postgres/airflow
+    # ── AeroCast data paths (absolute inside container) ─────────────────
+    AEROCAST_RAW_DIR: /opt/airflow/project/data/raw
+    AEROCAST_PROCESSED_DIR: /opt/airflow/project/data/processed
+  env_file:
+    - ../.env
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ../src:/opt/airflow/project/src:ro
+    - ../data:/opt/airflow/project/data
+    - airflow-logs:/opt/airflow/logs
+  depends_on:
+    postgres:
+      condition: service_healthy
+  restart: unless-stopped
+
+services:
+  # ── Metadata database ────────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── One-shot initialiser (run manually before first start) ───────────
+  airflow-init:
+    <<: *airflow-common
+    restart: "no"
+    command: >
+      bash -c "
+        airflow db migrate &&
+        airflow users create
+          --username airflow
+          --firstname Air
+          --lastname Flow
+          --role Admin
+          --email airflow@aerocast.local
+          --password airflow
+      "
+
+  # ── Scheduler ────────────────────────────────────────────────────────
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    healthcheck:
+      test: ["CMD", "airflow", "jobs", "check", "--job-type", "SchedulerJob"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ── Webserver ────────────────────────────────────────────────────────
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  postgres-db:
+  airflow-logs:
