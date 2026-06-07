@@ -45,6 +45,13 @@ class Settings(BaseSettings):
     api_port: int = Field(default=8000, alias="API_PORT")
     model_alias: str = Field(default="champion", alias="MODEL_ALIAS")
 
+    # ── Data directories ─────────────────────────────────────────────────
+    # Override in Docker via AEROCAST_RAW_DIR / AEROCAST_PROCESSED_DIR
+    data_raw_dir: str = Field(default="data/raw", alias="AEROCAST_RAW_DIR")
+    data_processed_dir: str = Field(
+        default="data/processed", alias="AEROCAST_PROCESSED_DIR"
+    )
+
     # ── Slack ─────────────────────────────────────────────────────────────
     slack_webhook_url: str = Field(default="", alias="SLACK_WEBHOOK_URL")
 
