@@ -52,6 +52,16 @@ class Settings(BaseSettings):
         default="data/processed", alias="AEROCAST_PROCESSED_DIR"
     )
 
+    # ── Drift detection ───────────────────────────────────────────────────
+    # Directory for Evidently HTML drift reports
+    drift_report_dir: str = Field(
+        default="reports/drift", alias="AEROCAST_DRIFT_REPORT_DIR"
+    )
+    # Share of columns that must drift to flag the whole dataset (0–1)
+    drift_dataset_threshold: float = Field(
+        default=0.5, alias="AEROCAST_DRIFT_DATASET_THRESHOLD"
+    )
+
     # ── Slack ─────────────────────────────────────────────────────────────
     slack_webhook_url: str = Field(default="", alias="SLACK_WEBHOOK_URL")
 
