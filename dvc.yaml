@@ -1,0 +1,28 @@
+stages:
+  ingest:
+    cmd: python -m aerocast.data.pipeline
+    deps:
+      - src/aerocast/data/client.py
+      - src/aerocast/data/pipeline.py
+      - src/aerocast/data/preprocess.py
+      - src/aerocast/data/validate.py
+    outs:
+      - data/raw:
+          cache: true
+          persist: true
+      - data/processed:
+          cache: true
+          persist: true
+
+  train:
+    cmd: python -m aerocast.models.train --synthetic
+    deps:
+      - src/aerocast/models/lgbm.py
+      - src/aerocast/models/mlp.py
+      - src/aerocast/models/registry.py
+      - src/aerocast/models/train.py
+      - data/processed
+    outs:
+      - models:
+          cache: true
+          persist: true
