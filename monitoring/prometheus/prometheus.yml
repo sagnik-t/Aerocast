@@ -1,0 +1,11 @@
+# ── AeroCast — Prometheus scrape configuration ────────────────────────────
+
+global:
+  scrape_interval: 15s       # how often to scrape targets
+  evaluation_interval: 15s   # how often to evaluate alerting rules
+
+scrape_configs:
+  - job_name: aerocast-api
+    static_configs:
+      - targets: ["aerocast-api:8000"]
+    metrics_path: /metrics
