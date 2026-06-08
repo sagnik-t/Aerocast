@@ -62,6 +62,11 @@ class Settings(BaseSettings):
         default=0.5, alias="AEROCAST_DRIFT_DATASET_THRESHOLD"
     )
 
+    # ── Railway deployment ────────────────────────────────────────────────
+    railway_token: str = Field(default="", alias="RAILWAY_TOKEN")
+    railway_service_id: str = Field(default="", alias="RAILWAY_SERVICE_ID")
+    railway_environment_id: str = Field(default="", alias="RAILWAY_ENVIRONMENT_ID")
+
     # ── Slack ─────────────────────────────────────────────────────────────
     slack_webhook_url: str = Field(default="", alias="SLACK_WEBHOOK_URL")
 
