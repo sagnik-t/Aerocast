@@ -1,0 +1,11 @@
+# ── AeroCast — Grafana dashboard provider ────────────────────────────────
+
+apiVersion: 1
+
+providers:
+  - name: aerocast
+    type: file
+    disableDeletion: true
+    updateIntervalSeconds: 30
+    options:
+      path: /var/lib/grafana/dashboards
