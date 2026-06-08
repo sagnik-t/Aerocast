@@ -13,8 +13,10 @@ train_and_promote
     in the W&B registry.
 
 redeploy_api
-    Stub — Phase 6 wires in the real serving container restart / Railway
-    deploy webhook. Currently emits a log line only.
+    Triggers a Railway service redeploy so the serving container picks up
+    the new champion.  Requires RAILWAY_TOKEN, RAILWAY_SERVICE_ID, and
+    RAILWAY_ENVIRONMENT_ID env vars; logs a warning and skips if any are
+    absent.
 
 notify_slack
     Posts a Slack summary with champion name, val RMSE for both models,
@@ -78,17 +80,69 @@ def retraining_dag() -> None:
     @task()
     def redeploy_api(results: dict) -> None:
         """
-        Restart the serving container with the new champion model.
+        Trigger a Railway service redeploy so the API container picks up the
+        newly promoted champion model.
 
-        Phase 6 implements the real restart / Railway webhook call.
-        This stub logs only so the DAG wiring is complete from day one.
+        Calls the Railway GraphQL v2 API (serviceInstanceRedeploy mutation).
+        If any required env var is missing, logs a warning and exits cleanly
+        so the rest of the DAG (notify_slack) still runs.
         """
         import logging
 
-        logging.getLogger(__name__).info(
-            "redeploy_api: stub — champion=%s. "
-            "Phase 6 will wire in the serving container restart.",
-            results.get("champion"),
+        import requests
+
+        from aerocast.config import settings
+
+        log = logging.getLogger(__name__)
+        champion = results.get("champion", "unknown")
+
+        if not all(
+            [
+                settings.railway_token,
+                settings.railway_service_id,
+                settings.railway_environment_id,
+            ]
+        ):
+            log.warning(
+                "redeploy_api: RAILWAY_TOKEN / RAILWAY_SERVICE_ID / "
+                "RAILWAY_ENVIRONMENT_ID not fully configured — skipping redeploy. "
+                "Champion=%s will be served on next container restart.",
+                champion,
+            )
+            return
+
+        url = "https://backboard.railway.app/graphql/v2"
+        mutation = """
+            mutation Redeploy($serviceId: String!, $environmentId: String!) {
+                serviceInstanceRedeploy(
+                    serviceId: $serviceId
+                    environmentId: $environmentId
+                )
+            }
+        """
+        payload = {
+            "query": mutation,
+            "variables": {
+                "serviceId": settings.railway_service_id,
+                "environmentId": settings.railway_environment_id,
+            },
+        }
+        headers = {
+            "Authorization": f"Bearer {settings.railway_token}",
+            "Content-Type": "application/json",
+        }
+
+        response = requests.post(url, json=payload, headers=headers, timeout=30)
+        response.raise_for_status()
+
+        data = response.json()
+        if "errors" in data:
+            raise RuntimeError(f"Railway redeploy failed: {data['errors']}")
+
+        log.info(
+            "Railway redeploy triggered — champion=%s, service=%s",
+            champion,
+            settings.railway_service_id,
         )
 
     @task()
