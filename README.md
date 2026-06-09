@@ -5,6 +5,8 @@
 [![CI](https://github.com/sagnik-t/Aerocast/actions/workflows/ci.yml/badge.svg)](https://github.com/sagnik-t/Aerocast/actions/workflows/ci.yml)
 [![Docker](https://github.com/sagnik-t/Aerocast/actions/workflows/docker.yml/badge.svg)](https://github.com/sagnik-t/Aerocast/actions/workflows/docker.yml)
 
+### 🌐 [sagnik-t.github.io/Aerocast](https://sagnik-t.github.io/Aerocast/) — Live Demo
+
 **Live API** · [aerocast-production.up.railway.app](https://aerocast-production.up.railway.app/docs) &nbsp;|&nbsp;
 **W&B Project** · [wandb.ai/sagnik-tr/aerocast](https://wandb.ai/sagnik-tr/aerocast) &nbsp;|&nbsp;
 **Data Quality Report** · [GitHub Pages](https://sagnik-t.github.io/Aerocast/reports/baseline_data_quality.html) &nbsp;|&nbsp;
