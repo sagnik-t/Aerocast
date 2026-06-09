@@ -62,7 +62,7 @@ line_length = 88
 testpaths    = ["tests"]
 asyncio_mode = "auto"
 pythonpath   = ["src"]
-addopts      = "--cov=src/aerocast --cov-report=term-missing"
+addopts      = "--cov=src/aerocast --cov-report=term-missing --cov-fail-under=60"
 
 [build-system]
 requires      = ["poetry-core"]
