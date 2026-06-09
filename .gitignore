@@ -25,6 +25,7 @@ venv/
 
 # W&B
 wandb/
+aerocast/
 
 # Jupyter
 .ipynb_checkpoints/
