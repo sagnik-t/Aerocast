@@ -72,7 +72,7 @@ jobs:
             "lightgbm>=4.3.0,<5.0.0" \
             "scikit-learn>=1.5.0,<2.0.0" \
             "wandb>=0.17.0,<1.0.0" \
-            "evidently>=0.4.0,<1.0.0" \
+            "evidently>=0.4.0,<0.5.0" \
             "apache-airflow>=2.11.0,<3.0.0" \
             "fastapi>=0.111.0,<0.200.0" \
             "uvicorn[standard]>=0.30.0,<1.0.0" \

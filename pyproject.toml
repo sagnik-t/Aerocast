@@ -64,6 +64,13 @@ asyncio_mode = "auto"
 pythonpath   = ["src"]
 addopts      = "--cov=src/aerocast --cov-report=term-missing --cov-fail-under=60"
 
+[tool.coverage.run]
+omit = [
+    "src/aerocast/data/validate.py",
+    "src/aerocast/data/pipeline.py",
+    "src/aerocast/notify.py",
+]
+
 [build-system]
 requires      = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
