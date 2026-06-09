@@ -100,8 +100,9 @@ def _set_alias(
     entity: str, project: str, artifact: "wandb.Artifact", alias: str
 ) -> None:
     """Set a single alias on an artifact via the W&B API."""
+    artifact.wait()  # ensure upload is complete before accessing .version
     api = wandb.Api()
-    # artifact.id is available once it has been logged
+    # artifact.version is available once the artifact has finished uploading
     qualified = f"{entity}/{project}/{REGISTRY_NAME}:v{artifact.version}"
     try:
         art = api.artifact(qualified)
